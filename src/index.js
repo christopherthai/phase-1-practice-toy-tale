@@ -7,6 +7,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const toyCollection = document.querySelector('#toy-collection');
   const url = "http://localhost:3000/toys"
   
+  
+  //Increae the toy's like after clicking the like button
+const likes = (toy, event) => {
+
+  console.log(toy.likes)
+  let morelikes = toy.likes + 1
+  console.log(morelikes)
+
+  fetch(`http://localhost:3000/toys/${event.target.id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+        Accept: "application/json"
+    },
+    body: JSON.stringify({
+      "likes": morelikes
+    })
+  })
+  .then((response) => response.json())
+  .then((likeObject) => {
+    event.target.previousElementSibling.innerText = `${likeObject.likes} likes`
+  })
+}
+  
   const addToysOnPage = (toy) => {
 
     let toyCard = document.createElement('div')
@@ -23,6 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
     toyButton.textContent = "like"
     toyButton.className = "like-btn"
     toyButton.id = toy.id
+
+    toyButton.addEventListener('click', (event) => {
+      event.preventDefault()
+      likes(toy, event)
+    })
 
     toyCard.appendChild(toyName)
     toyCard.appendChild(toyImage)
@@ -53,28 +82,6 @@ const addNewToy = (toyData) => {
       addToysOnPage(toyObject)
   })
 }
-
-//Increae the toy's like after clicking the like button
-toyCollection.addEventListener('click', (event) => {
-  event.preventDefault()
-  let morelikes = pareseInt(event.target.previousElementSibling.innerHTML) + 1
-
-  fetch(`http://localhost:3000/toys/${event.target.id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-        Accept: "application/json"
-    },
-    body: JSON.stringify({
-      "like": morelikes
-    })
-  })
-  .then((response) => response.json())
-  .then((likeObject) => {
-    event.target.previousElementSibling.innerHTML = `${morelikes} likes`
-  })
-
-})
 
 addBtn.addEventListener("click", () => {
   // hide & seek with the form
